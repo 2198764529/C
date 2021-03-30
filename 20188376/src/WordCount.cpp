@@ -1,67 +1,69 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <iterator>
+#include <sstream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
-void character();
 
-// 统计字符
-void character()
+// ********************************************************************************
+// 说明：			字符统计类
+// 
+// 属性：			vFileData					原始操作数据
+//												(数据为全ASCII字符的英文小写字符串)
+//
+// 操作：			StatisticsCharacter(string vFileData)
+//												复制构造函数，获取指定文件中的数据流
+// ********************************************************************************
+
+class StatisticsCharacter
 {
-	char c, fileName[60];
-	int count = 0;
-	cout << "Please enter the file's name:\n";
-	cin.getline(fileName, 60);
-	fstream inFile;
-	inFile.open(fileName);
-	if (!inFile.is_open()) {
-		cout << "Could not find the file\n";
-		cout << "Program terminating\n";
-		exit(EXIT_FAILURE);
+private:
+	// 获得只保留汉字并全小写的数据串
+	string vFileData;
+
+public:
+	StatisticsCharacter(string vFileData);
+};
+
+// ********************************************************************************
+// 说明：			类构造函数，在此构造函数中，将初步导入文件中的数据；
+//					并执行，去除其中的非ASCII符号操作 和 全字段小写操作。
+// 
+// 操作变量：		oInputFileStream			文件操作流
+//
+// 数据变量：		vPrimitiveData				原始数据
+//					vASCIIData					全ASCII码数据
+//					vTolowerData				全小写数据
+//					vpTemp						临时指针
+// ********************************************************************************
+
+StatisticsCharacter::StatisticsCharacter(string vFilePath) 
+{
+	ifstream oInputFileStream(vFilePath);
+	if (oInputFileStream.fail())
+	{
+		cout << "Fail of file!" << endl;
 	}
-	inFile >> c;
-	while (!inFile.eof()) {
-		if (inFile.good()) {
-			count++;
-			inFile >> c;
-		}
-		/*else
-		{
-			inFile.get();
-		}*/
+	else
+	{
+		string vPrimitiveData, vASCIIData;
+		oInputFileStream.unsetf(ios::skipws);
+		copy(istream_iterator<char>(oInputFileStream), istream_iterator<char>(), back_insert_iterator<string>(vPrimitiveData));
+
+		const char* vpTemp = vPrimitiveData.c_str();
+		for (int i = 0; i < vPrimitiveData.length(); i++)
+			if (vpTemp[i] - '\0' >= 0 && vpTemp[i] - '\0' <= 127)
+				vASCIIData += vpTemp[i];
+
+		std::transform(vASCIIData.begin(), vASCIIData.end(), std::back_inserter(vFileData), std::tolower);
 	}
-	cout << "The file include " << count << " characters." << endl;
-	system("pause");
 }
-
-#include <iostream> 
-#include <fstream> 
-#include <string> 
-#include <iterator> 
-using namespace std;
-
 
 int main()
 {
-	ifstream ifs("input.txt");
-	if (ifs.fail())
-		return -1;
-	string ss;
-	ifs.unsetf(ios::skipws);
-	
-	// 完成数据的采集
-	copy(istream_iterator<char>(ifs), istream_iterator<char>(), back_insert_iterator<string>(ss));
-
-	// 除去汉字字符的全部字符
-
-	// 单词的个数（思路如下：先拆分，再判断）
-
-	// 输出换行符 并且判断换行符内部有没有空白字符
-
-
-	ifs.close();
-	copy(ss.begin(), ss.end(), ostream_iterator<char>(cout, ""));
-
+	StatisticsCharacter vStatisticsCharacter("input.txt");
 	return 0;
 }
