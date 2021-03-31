@@ -54,7 +54,7 @@ public:
 	int EffectiveRows();
 	int EffectiveCharacter();
 	int EffectiveWordsValue();
-	void EffectiveWordFrequency();
+	void EffectiveWordFrequency(ofstream& outFile);
 
 private:
 	void EffectiveWords();
@@ -227,7 +227,7 @@ struct CmpByValue {
 // 数据变量：		vWordTop					频率最高的十个单词
 // ********************************************************************************
 
-void StatisticsCharacter::EffectiveWordFrequency()
+void StatisticsCharacter::EffectiveWordFrequency(ofstream& outFile)
 {
 	map<string, int> oWordFrequency;
 
@@ -237,18 +237,22 @@ void StatisticsCharacter::EffectiveWordFrequency()
 	vector<PAIR> vWordTop(oWordFrequency.begin(), oWordFrequency.end());
 	sort(vWordTop.begin(), vWordTop.end(), CmpByValue());
 	for (int i = 0; vWordTop.size() < 10 ? i != vWordTop.size() : i != 10; ++i) {
-		cout << vWordTop[i].first << ": " << vWordTop[i].second << endl;
+		outFile << vWordTop[i].first << ": " << vWordTop[i].second << endl;
 	}
 }
 
-int main()
-{
-	StatisticsCharacter vStatisticsCharacter("input.txt");
 
-	cout << "characters: " << vStatisticsCharacter.EffectiveCharacter() << endl;
-	cout << "words: " << vStatisticsCharacter.EffectiveWordsValue() << endl;
-	cout << "lines: " << vStatisticsCharacter.EffectiveRows() << endl;
-	vStatisticsCharacter.EffectiveWordFrequency();
+int main(int argc, char* argv[])
+{
+	StatisticsCharacter vStatisticsCharacter(argv[1]);
+
+	ofstream outFile;
+	outFile.open(argv[2], ios::out);
+
+	outFile << "characters: " << vStatisticsCharacter.EffectiveCharacter() << endl;
+	outFile << "words: " << vStatisticsCharacter.EffectiveWordsValue() << endl;
+	outFile << "lines: " << vStatisticsCharacter.EffectiveRows() << endl;
+	vStatisticsCharacter.EffectiveWordFrequency(outFile);
 
 	return 0;
 }
