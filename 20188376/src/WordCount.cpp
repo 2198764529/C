@@ -15,7 +15,10 @@ using namespace std;
 //												(数据为全ASCII字符的英文小写字符串)
 //
 // 操作：			StatisticsCharacter(string vFileData)
-//												复制构造函数，获取指定文件中的数据流
+//					复制构造函数，获取指定文件中的数据流
+//
+//					EffectiveRows()
+//					有效行数统计
 // ********************************************************************************
 
 class StatisticsCharacter
@@ -26,6 +29,9 @@ private:
 
 public:
 	StatisticsCharacter(string vFileData);
+
+public:
+	int EffectiveRows();
 };
 
 // ********************************************************************************
@@ -40,7 +46,7 @@ public:
 //					vpTemp						临时指针
 // ********************************************************************************
 
-StatisticsCharacter::StatisticsCharacter(string vFilePath) 
+StatisticsCharacter::StatisticsCharacter(string vFilePath)
 {
 	ifstream oInputFileStream(vFilePath);
 	if (oInputFileStream.fail())
@@ -62,8 +68,34 @@ StatisticsCharacter::StatisticsCharacter(string vFilePath)
 	}
 }
 
+// ********************************************************************************
+// 说明：			有效行数统计。这里使用流切割输入的方式，统计并储存包含了有效字符的
+//					行数。并输出其行数。
+// 
+// 操作变量：		oStreamFileData				文件操作流
+//
+// 数据变量：		vRowsList					有效行数列表
+//					vsTemp						临时字符串
+// ********************************************************************************
+
+int StatisticsCharacter::EffectiveRows()
+{
+	vector<string> vRowsList;
+	stringstream oStreamFileData(vFileData);
+	string vsTemp;
+
+	while (getline(oStreamFileData, vsTemp, '\n'))
+	{
+		if (vsTemp != "")
+			vRowsList.push_back(vsTemp);
+	}
+
+	return vRowsList.size();
+}
+
 int main()
 {
 	StatisticsCharacter vStatisticsCharacter("input.txt");
+	int vEffectiveRows = vStatisticsCharacter.EffectiveRows();
 	return 0;
 }
